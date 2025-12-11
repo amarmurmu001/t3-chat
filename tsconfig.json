@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "lib/db.js", "lib/auth.js"  ],
+, "lib/db.js", "lib/auth.js", "components/user-button.jsx", "components/chat-message-form.jsx", "app/page.jsx"  ],
   "exclude": ["node_modules"]
 }
