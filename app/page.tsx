@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Send } from "lucide-react"
+import { ModeToggle } from "@/components/ui/mode-toggle"
 
 export default function Home() {
   return (
@@ -18,7 +19,10 @@ export default function Home() {
         <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="font-medium">New Chat</div>
+          <div className="flex items-center gap-2 justify-between w-full">
+            <div className="font-medium">New Chat</div>
+            <ModeToggle/>
+          </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 lg:p-8">
             <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-4 text-center">

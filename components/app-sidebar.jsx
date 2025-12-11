@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sidebar"
 import { UserButton } from "@/components/user-button"
 import { MessageSquare, Plus, Zap } from "lucide-react"
+import { useSession } from "@/lib/auth-client"
+
 
 // This is sample data.
 const chatHistory = [
@@ -44,6 +46,10 @@ const chatHistory = [
 ]
 
 export function AppSidebar(props) {
+
+  const {data: session} = useSession()
+
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -99,8 +105,14 @@ export function AppSidebar(props) {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="p-2">
+        <div className="p-2 flex  gap-4 font-semibold">
             <UserButton />
+            <div>
+
+            <p>{session?.user?.name}</p>
+            <p className="text-xs text-muted-foreground">Free</p>
+            </div>
+
         </div>
       </SidebarFooter>
       <SidebarRail />
