@@ -110,7 +110,12 @@ export function AppSidebar(props) {
             <div>
 
             <p>{session?.user?.name}</p>
-            <p className="text-xs text-muted-foreground">Free</p>
+
+            {
+              session?.user && (
+                <p className="text-xs text-muted-foreground">Free</p>
+              )
+            }
             </div>
 
         </div>
