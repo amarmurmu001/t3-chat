@@ -36,16 +36,52 @@ export function AppSidebar({ chats = [] }) {
     await deleteChat(id);
   };
 
-  const filteredChats = useMemo(() => {
-    if (!chats) return [];
-    if (!searchQuery) {
-      return chats;
+  const { filteredChats, groupedChats } = useMemo(() => {
+    if (!chats) return { filteredChats: [], groupedChats: {} };
+
+    // First, filter by search query
+    let filtered = chats;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = chats.filter((chat) => {
+        return chat.title?.toLowerCase().includes(query);
+      });
     }
 
-    const query = searchQuery.toLowerCase();
-    return chats.filter((chat) => {
-      return chat.title?.toLowerCase().includes(query);
+    // Then, group by date
+    const groups = {
+      Today: [],
+      Yesterday: [],
+      "Previous 7 Days": [],
+      Older: [],
+    };
+
+    const now = new Date();
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(todayStart.getDate() - 1);
+    const last7DaysStart = new Date(todayStart);
+    last7DaysStart.setDate(todayStart.getDate() - 7);
+
+    filtered.forEach((chat) => {
+      const chatDate = new Date(chat.createdAt);
+
+      if (chatDate >= todayStart) {
+        groups["Today"].push(chat);
+      } else if (chatDate >= yesterdayStart) {
+        groups["Yesterday"].push(chat);
+      } else if (chatDate >= last7DaysStart) {
+        groups["Previous 7 Days"].push(chat);
+      } else {
+        groups["Older"].push(chat);
+      }
     });
+
+    return { filteredChats: filtered, groupedChats: groups };
   }, [chats, searchQuery]);
 
   return (
@@ -86,35 +122,44 @@ export function AppSidebar({ chats = [] }) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredChats.map((chat) => (
-                <SidebarMenuItem key={chat.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={chat.id === activeChatId}
-                    className="group relative pr-8"
-                  >
-                    <Link href={`/chat/${chat.id}`}>
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      <span className="truncate">{chat.title}</span>
-                      <div
-                        className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-sidebar-accent rounded-md"
-                        onClick={(e) => handleDeleteChat(e, chat.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                      </div>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              {filteredChats.length === 0 && (
-                <div className="text-muted-foreground text-sm px-2 py-4 text-center">
-                  No chats found
-                </div>
-              )}
-            </SidebarMenu>
+            {Object.entries(groupedChats).map(
+              ([group, groupChats]) =>
+                groupChats.length > 0 && (
+                  <div key={group} className="mb-4">
+                    <h3 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      {group}
+                    </h3>
+                    <SidebarMenu>
+                      {groupChats.map((chat) => (
+                        <SidebarMenuItem key={chat.id}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={chat.id === activeChatId}
+                            className="group relative pr-8"
+                          >
+                            <Link href={`/chat/${chat.id}`}>
+                              <MessageSquare className="mr-2 h-4 w-4" />
+                              <span className="truncate">{chat.title}</span>
+                              <div
+                                className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-sidebar-accent rounded-md"
+                                onClick={(e) => handleDeleteChat(e, chat.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                              </div>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </div>
+                )
+            )}
+            {filteredChats.length === 0 && (
+              <div className="text-muted-foreground text-sm px-2 py-4 text-center">
+                No chats found
+              </div>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
