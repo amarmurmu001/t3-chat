@@ -6,18 +6,21 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarInput,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@/components/user-button";
-import { MessageSquare, Plus, Zap, Trash2 } from "lucide-react";
+import { MessageSquare, Plus, Zap, Trash2, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { useChatStore } from "@/app/modules/chat/store/chat-store";
 import { useState, useMemo } from "react";
 import { useDeleteChat } from "@/app/modules/chat/hooks/chat";
+import { Label } from "@/components/ui/label";
 
 // This is sample data.
 
@@ -90,7 +93,7 @@ export function AppSidebar({ chats = [] }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Zap className="size-4" />
                 </div>
@@ -98,10 +101,27 @@ export function AppSidebar({ chats = [] }) {
                   <span className="font-semibold">T3 Chat</span>
                   <span className="">v1.0.0</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <SidebarGroup className="py-0">
+            <SidebarGroupContent className="relative">
+              <Label htmlFor="search" className="sr-only">
+                Search
+              </Label>
+              <SidebarInput
+                id="search"
+                placeholder="Search chats..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8"
+              />
+              <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </form>
       </SidebarHeader>
 
       <SidebarContent>
@@ -136,19 +156,19 @@ export function AppSidebar({ chats = [] }) {
                           <SidebarMenuButton
                             asChild
                             isActive={chat.id === activeChatId}
-                            className="group relative pr-8"
                           >
                             <Link href={`/chat/${chat.id}`}>
                               <MessageSquare className="mr-2 h-4 w-4" />
                               <span className="truncate">{chat.title}</span>
-                              <div
-                                className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-sidebar-accent rounded-md"
-                                onClick={(e) => handleDeleteChat(e, chat.id)}
-                              >
-                                <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                              </div>
                             </Link>
                           </SidebarMenuButton>
+                          <SidebarMenuAction
+                            showOnHover
+                            onClick={(e) => handleDeleteChat(e, chat.id)}
+                          >
+                            <Trash2 />
+                            <span className="sr-only">Delete</span>
+                          </SidebarMenuAction>
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>
