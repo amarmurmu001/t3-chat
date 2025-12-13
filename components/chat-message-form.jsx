@@ -2,10 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ModelsSelector } from "./models-selector";
+import { useCreateChat } from "@/app/modules/chat/hooks/chat";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 import { useAIModels } from "@/app/modules/ai-agents/hook/ai-agents";
 
 export function ChatMessageForm({ initialMessage, onMessageChange }) {
+  const { mutateAsync, isPending: isChatPending } = useCreateChat();
   useEffect(() => {
     if (initialMessage) {
       setMessage(initialMessage);
@@ -16,18 +20,30 @@ export function ChatMessageForm({ initialMessage, onMessageChange }) {
   const { data: modelsData } = useAIModels();
   const models = modelsData?.models || [];
   console.log(models);
+
   const [selectedModelId, setSelectedModelId] = useState(null);
   const [message, setMessage] = useState("");
+
   const onModelChange = (modelId) => {
     setSelectedModelId(modelId);
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Message Sent");
-    onMessageChange(message);
-    setMessage("");
+    try {
+      e.preventDefault();
+      await mutateAsync({
+        content: message,
+        model: selectedModelId,
+      });
+      toast.success("message sent successfully");
+      onMessageChange(message);
+      setMessage("");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "message sent failed");
+    }
   };
+
   return (
     <div className="max-w-3xl  w-full mx-auto relative mb-4">
       <div className="relative mb-2 flex items-center w-full">
@@ -46,11 +62,16 @@ export function ChatMessageForm({ initialMessage, onMessageChange }) {
           />
           <Button
             type="submit"
+            disabled={isChatPending}
             size="icon"
             className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 lg:h-10 lg:w-10 rounded-full"
             variant="ghost"
           >
-            <Send className="h-5 w-5" />
+            {isChatPending ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Send className="h-5 w-5" />
+            )}
           </Button>
         </form>
       </div>
