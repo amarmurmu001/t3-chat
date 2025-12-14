@@ -18,6 +18,15 @@ export function LegalLayout({ children, title, lastUpdated }: LegalLayoutProps) 
 
                 <div className="max-w-3xl mx-auto space-y-12">
                     <div className="space-y-4 text-center">
+                        <nav aria-label="Breadcrumb" className="flex justify-center">
+                            <ol className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <li>
+                                    <a href="/landing" className="hover:text-primary transition-colors">Home</a>
+                                </li>
+                                <li>/</li>
+                                <li className="text-foreground font-medium" aria-current="page">{title}</li>
+                            </ol>
+                        </nav>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{title}</h1>
                         {lastUpdated && (
                             <p className="text-muted-foreground text-sm uppercase tracking-widest">
@@ -25,6 +34,30 @@ export function LegalLayout({ children, title, lastUpdated }: LegalLayoutProps) 
                             </p>
                         )}
                     </div>
+
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                "@context": "https://schema.org",
+                                "@type": "BreadcrumbList",
+                                "itemListElement": [
+                                    {
+                                        "@type": "ListItem",
+                                        "position": 1,
+                                        "name": "Home",
+                                        "item": "https://qubot.online"
+                                    },
+                                    {
+                                        "@type": "ListItem",
+                                        "position": 2,
+                                        "name": title,
+                                        "item": `https://qubot.online/${title.toLowerCase().replace(/\s+/g, '-')}`
+                                    }
+                                ]
+                            })
+                        }}
+                    />
 
                     <div className="prose prose-zinc dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-li:marker:text-primary/50">
                         {children}

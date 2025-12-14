@@ -5,20 +5,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: "https://qubot.online",
       lastModified: new Date(),
-      changeFrequency: "yearly",
+      changeFrequency: "weekly",
       priority: 1,
+    },
+    {
+      url: "https://qubot.online/landing",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
     },
     {
       url: "https://qubot.online/sign-in",
       lastModified: new Date(),
-      changeFrequency: "daily",
+      changeFrequency: "monthly",
       priority: 0.6,
     },
     {
-      url: "https://qubot.online/chat",
+      url: "https://qubot.online/privacy",
       lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: "https://qubot.online/terms",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 }
