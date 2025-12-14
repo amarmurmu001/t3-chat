@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@/components/user-button";
-import { MessageSquare, Plus, Zap, Trash2, Search } from "lucide-react";
+import { MessageSquare, Plus, Zap, Trash2, Search, Bot } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { useChatStore } from "@/app/modules/chat/store/chat-store";
@@ -95,10 +95,10 @@ export function AppSidebar({ chats = [] }) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Zap className="size-4" />
+                  <Bot className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">T3 Chat</span>
+                  <span className="font-semibold">Qubot</span>
                   <span className="">v1.0.0</span>
                 </div>
               </Link>

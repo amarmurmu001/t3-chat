@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { signIn } from "@/lib/auth-client"
-import { Github, MessageCircle, Loader2 } from "lucide-react"
+import { Github, Bot, Loader2 } from "lucide-react"
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,8 +27,8 @@ const SignIn = () => {
         
         {/* Logo Section */}
         <div className="flex flex-col items-center gap-4 mb-4">
-          <div className="p-3 rounded-2xl bg-primary/10 ring-1 ring-primary/20">
-            <MessageCircle className="h-8 w-8 text-primary" />
+          <div className="p-3 rounded-2xl bg-primary ring-1 ring-primary/20">
+            <Bot className="h-8 w-8 text-black " />
           </div>
         </div>
 

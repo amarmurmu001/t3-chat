@@ -93,7 +93,7 @@ export function ChatMessageForm({
         <form action="" onSubmit={handleSubmit} className="w-full">
           <textarea
             className="flex h-12 lg:h-14 w-full rounded-2xl border border-input bg-background px-4 py-2 text-base ring-offset-0 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 pr-12 shadow-sm resize-none"
-            placeholder="Message T3 Chat..."
+            placeholder="Message Qubot..."
             value={message}
             disabled={isDisabled}
             onChange={(e) => setMessage(e.target.value)}
