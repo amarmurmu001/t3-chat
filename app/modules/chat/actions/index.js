@@ -198,6 +198,16 @@ export const updateChatWithMessage = async (values) => {
             }
         })
 
+        // Update Chat Model
+        await db.chat.update({
+            where: {
+                id: chatId
+            },
+            data: {
+                model
+            }
+        })
+
         // Fetch Chat History for Context
         const previousMessages = await db.message.findMany({
             where: { chatId },

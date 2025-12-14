@@ -53,6 +53,31 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat?.messages, streamingContent]);
 
+  // Auto-trigger response if last message is USER (e.g. fresh chat)
+  useEffect(() => {
+    if (
+      chat?.messages?.length > 0 &&
+      !isChatLoading &&
+      !isStreaming &&
+      !streamingContent
+    ) {
+      const lastMessage = chat.messages[chat.messages.length - 1];
+      if (lastMessage.messageRole === "USER") {
+        const messagesForApi = chat.messages.map((msg) => ({
+          role: msg.messageRole.toLowerCase(),
+          content: msg.content,
+        }));
+        // We use the direct startStreaming instead of handleStartStreaming to avoid dependency issues,
+        // but we need to pass the current model from chat if available.
+        startStreaming({
+          messages: messagesForApi,
+          model: chat.model,
+          chatId: id,
+        });
+      }
+    }
+  }, [chat, isChatLoading, isStreaming, streamingContent, startStreaming, id]);
+
   const handleMessageChange = () => {
     // Refresh handled by query invalidation
   };
