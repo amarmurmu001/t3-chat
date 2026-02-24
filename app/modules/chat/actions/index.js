@@ -14,7 +14,7 @@ const getAIResponse = async (messages, model) => {
         const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": "Bearer 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",
+                "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             },
