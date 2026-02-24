@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ModelsSelector } from "./models-selector";
+// import { ModelsSelector } from "./models-selector";
 import { useCreateChat, useUpdateChat } from "@/app/modules/chat/hooks/chat";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -119,11 +119,11 @@ export function ChatMessageForm({
           </Button>
         </form>
       </div>
-      <ModelsSelector
+      {/* <ModelsSelector
         models={models}
         selectedModelId={selectedModelId}
         onModelChange={onModelChange}
-      />
+      /> */}
       <p className="text-xs text-center text-muted-foreground mt-2">
         AI can make mistakes. Please verify important information.
       </p>
