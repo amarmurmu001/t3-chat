@@ -14,23 +14,33 @@ export async function POST(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const { messages, model, chatId } = await request.json()
+        const { messages, chatId } = await request.json()
 
-        if (!messages || !model) {
+        if (!messages) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
         }
 
-        // Call OpenRouter with streaming enabled
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const model = "qwen/qwen3.5-397b-a17b"
+
+        // Call NVIDIA API with streaming enabled
+        const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
+                "Accept": "text/event-stream",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 model: model,
                 messages: messages,
-                stream: true
+                max_tokens: 16384,
+                temperature: 0.60,
+                top_p: 0.95,
+                top_k: 20,
+                presence_penalty: 0,
+                repetition_penalty: 1,
+                stream: true,
+                chat_template_kwargs: { "enable_thinking": true }
             })
         })
 

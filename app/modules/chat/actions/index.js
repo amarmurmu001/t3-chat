@@ -10,15 +10,25 @@ import { revalidatePath } from "next/cache"
 
 const getAIResponse = async (messages, model) => {
     try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const nvidiaModel = "qwen/qwen3.5-397b-a17b";
+        const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Authorization": "Bearer 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",
+                "Accept": "application/json",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: model,
-                messages: messages
+                model: nvidiaModel,
+                messages: messages,
+                max_tokens: 16384,
+                temperature: 0.60,
+                top_p: 0.95,
+                top_k: 20,
+                presence_penalty: 0,
+                repetition_penalty: 1,
+                stream: false,
+                chat_template_kwargs: { "enable_thinking": true }
             })
         })
 
