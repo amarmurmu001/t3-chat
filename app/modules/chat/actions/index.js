@@ -4,32 +4,39 @@ import { randomUUID } from "crypto"
 import { MessageRole, MessageType } from "@/generated/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
-import { success } from "zod"
 import { revalidatePath } from "next/cache"
+import { getProviderForModel } from "@/lib/ai-providers"
 
 
 const getAIResponse = async (messages, model) => {
     try {
-        const nvidiaModel = "qwen/qwen3.5-397b-a17b";
-        const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        const resolvedModel = model || "qwen/qwen3.5-397b-a17b";
+        const provider = getProviderForModel(resolvedModel)
+
+        const requestBody = {
+            model: resolvedModel,
+            messages: messages,
+            max_tokens: 16384,
+            temperature: 0.60,
+            stream: false,
+        }
+
+        if (provider === getProviderForModel("qwen/qwen3.5-397b-a17b")) {
+            requestBody.top_p = 0.95
+            requestBody.top_k = 20
+            requestBody.presence_penalty = 0
+            requestBody.repetition_penalty = 1
+            requestBody.chat_template_kwargs = { "enable_thinking": true }
+        }
+
+        const response = await fetch(provider.baseUrl, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
+                [provider.apiKeyHeader]: `Bearer ${provider.getApiKey()}`,
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                model: nvidiaModel,
-                messages: messages,
-                max_tokens: 16384,
-                temperature: 0.60,
-                top_p: 0.95,
-                top_k: 20,
-                presence_penalty: 0,
-                repetition_penalty: 1,
-                stream: false,
-                chat_template_kwargs: { "enable_thinking": true }
-            })
+            body: JSON.stringify(requestBody)
         })
 
         if (!response.ok) {

@@ -1,18 +1,9 @@
 import { NextResponse } from "next/server"
+import { getAvailableModels } from "@/lib/ai-providers"
 
 export async function GET() {
     try {
-        const formattedModels = [
-            {
-                id: "qwen/qwen3.5-397b-a17b",
-                name: "Qwen 3.5 397B",
-                description: "NVIDIA hosted Qwen 3.5 397B",
-                context_length: 16384,
-                architecture: { modility: "text-text" },
-                pricing: { prompt: "0", completion: "0" },
-                top_provider: "NVIDIA",
-            }
-        ];
+        const formattedModels = getAvailableModels()
 
         return NextResponse.json({ success: true, models: formattedModels })
 

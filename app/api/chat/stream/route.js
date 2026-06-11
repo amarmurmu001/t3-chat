@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import db from "@/lib/db"
 import { MessageRole, MessageType } from "@/generated/prisma"
+import { getProviderForModel } from "@/lib/ai-providers"
 
 export async function POST(request) {
     try {
@@ -14,34 +15,39 @@ export async function POST(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const { messages, chatId } = await request.json()
+        const { messages, chatId, model: requestModel } = await request.json()
 
         if (!messages) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
         }
 
-        const model = "qwen/qwen3.5-397b-a17b"
+        const model = requestModel || "qwen/qwen3.5-397b-a17b"
+        const provider = getProviderForModel(model)
 
-        // Call NVIDIA API with streaming enabled
-        const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        const requestBody = {
+            model: model,
+            messages: messages,
+            max_tokens: 16384,
+            temperature: 0.60,
+            stream: true,
+        }
+
+        if (provider === getProviderForModel("qwen/qwen3.5-397b-a17b")) {
+            requestBody.top_p = 0.95
+            requestBody.top_k = 20
+            requestBody.presence_penalty = 0
+            requestBody.repetition_penalty = 1
+            requestBody.chat_template_kwargs = { "enable_thinking": true }
+        }
+
+        const response = await fetch(provider.baseUrl, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
+                [provider.apiKeyHeader]: `Bearer ${provider.getApiKey()}`,
                 "Accept": "text/event-stream",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                model: model,
-                messages: messages,
-                max_tokens: 16384,
-                temperature: 0.60,
-                top_p: 0.95,
-                top_k: 20,
-                presence_penalty: 0,
-                repetition_penalty: 1,
-                stream: true,
-                chat_template_kwargs: { "enable_thinking": true }
-            })
+            body: JSON.stringify(requestBody)
         })
 
         if (!response.ok) {

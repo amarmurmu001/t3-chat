@@ -73,7 +73,7 @@ model Verification {
 }
 
 model Chat {
-  id        String    @id
+  id        String    @id @default(cuid())
   title     String
   model     String
   userId    String
